@@ -1,0 +1,21 @@
+[project]
+name = "ma-skills-exp"
+version = "0.1.0"
+description = "Experiment to manage a database of skills and competencies held by MapAction volunteers."
+readme = "README.md"
+classifiers = [
+    "Private :: Do Not Upload",
+    "License :: OSI Approved :: MIT License",
+]
+requires-python = ">=3.13"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "ruff>=0.8.4",
+]
+
+[tool.ruff]
+src = ["src"]
+line-length = 120
+target-version = "py313"
