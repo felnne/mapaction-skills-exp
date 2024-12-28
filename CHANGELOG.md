@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.1.0] - 2024-12-28
+
 ### Added
 
-- Initial experiment ...
+- Initial experiment with static skills and ephemeral volunteer and skill assignments
