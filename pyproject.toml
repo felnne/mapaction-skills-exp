@@ -1,6 +1,6 @@
 [project]
 name = "ma-skills-exp"
-version = "0.2.0"
+version = "0.3.0"
 description = "Experiment to manage a database of skills and competencies held by MapAction volunteers."
 readme = "README.md"
 classifiers = [
