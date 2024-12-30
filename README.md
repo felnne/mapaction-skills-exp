@@ -12,8 +12,8 @@ https://felnne-ma-skills-exp.streamlit.app/
     - if necessary create a [Neon](https://console.neon.tech) account
     - create a new Neon project (`ma-skills-exp`)
     - use the provided connection string as the `connections.neon.url` value in Streamlit secrets
-    - migrate database: `uv run -- scripts/db_migrate.py up`
-    - seed database: `uv run -- scripts/db_seed.py`
+    - migrate database: `uv run scripts/db_migrate.py up`
+    - seed database: `uv run scripts/db_seed.py`
 1. create a Streamlit Community Cloud deployment
     - push code to GitHub
     - if needed, create a Streamlit Community Cloud account and authorise GitHub integration
@@ -61,8 +61,8 @@ CREATE DATABASE ma_skills OWNER ma_skills_owner;
 (Update the 'xxx' value for a secure password and update connection string in `.streamlit/secrets.toml`.)
 
 ```
-$ uv run -- scripts/db_migrate.py up
-$ uv run -- scripts/db_seed.py
+$ uv run scripts/db_migrate.py up
+$ uv run scripts/db_seed.py
 ```
 
 Run app:
