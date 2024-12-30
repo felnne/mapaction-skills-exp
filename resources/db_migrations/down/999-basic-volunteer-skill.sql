@@ -1,0 +1,5 @@
+DROP VIEW IF EXISTS v1.volunteer_skills;
+DROP TABLE IF EXISTS v1.volunteer_skill;
+DROP TABLE IF EXISTS v1.skill;
+DROP TABLE IF EXISTS v1.volunteer;
+DROP SCHEMA IF EXISTS v1;

@@ -2,6 +2,15 @@
 
 Experiment to manage a database of skills and competencies held by MapAction volunteers.
 
+## Setup
+
+1. create a Neon project
+    - if necessary create a [Neon](https://console.neon.tech) account
+    - create a new Neon project (`ma-skills-exp`)
+    - use the provided connection string as the `connections.neon.url` value in Streamlit secrets
+    - migrate database: `uv run -- scripts/db_migrate.py up`
+    - seed database: `uv run -- scripts/db_seed.py`
+
 ## Developing
 
 ### Local development environment
@@ -19,7 +28,10 @@ Setup project:
 $ git clone https://github.com/felnne/mapaction-skills-exp
 $ cd mapaction-skills-exp/
 $ pre-commit install
+$ cp .streamlit/secrets.toml.example .streamlit/secrets.toml
 ```
+
+(Update any 'xxx' values in `.streamlit/secrets.toml`.)
 
 **Note:** UV will automatically create a Python virtual environment for the project at runtime.
 
@@ -30,6 +42,12 @@ CREATE USER ma_skills_owner WITH PASSWORD 'xxx';
 CREATE DATABASE ma_skills OWNER ma_skills_owner;
 ```
 
+(Update the 'xxx' value for a secure password and update connection string in `.streamlit/secrets.toml`.)
+
+```
+$ uv run -- scripts/db_migrate.py up
+$ uv run -- scripts/db_seed.py
+```
 # License
 
 Copyright (c) 2024 MapAction.

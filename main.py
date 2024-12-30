@@ -1,61 +1,57 @@
+from datetime import timedelta
 from pathlib import Path
 from tomllib import load as toml_load
 from typing import Set
 
 import streamlit as st
-from faker import Faker
-
-from skills import skills_flat as all_skills_flat
+from streamlit.connections import SQLConnection
 
 
 class VolunteerSkillsClient:
-    def __init__(self):
-        self._volunteer_skills = self._generate()
-
-    @staticmethod
-    def _generate() -> dict[str, list[str]]:
-        volunteers_skills = {}
-
-        faker = Faker("en_GB")
-        common_skill = faker.random_element(all_skills_flat)
-        max_len = len(all_skills_flat)
-
-        for _ in range(42):
-            volunteer_skills = faker.random_elements(
-                elements=all_skills_flat,
-                unique=True,
-                length=faker.random_int(min=2, max=max_len),
-            )
-            volunteers_skills[faker.unique.name()] = list(volunteer_skills) + [common_skill]
-
-        return volunteers_skills
+    def __init__(self, conn: SQLConnection):
+        self._conn = conn
 
     @property
     def available_skills(self) -> list[str]:
-        return sorted(list(set(skill for skills in self._volunteer_skills.values() for skill in skills)))
+        df = self._conn.query(sql="SELECT distinct(skill) FROM v1.volunteer_skills;", ttl=timedelta(minutes=10))
+        return sorted(list(df["skill"]))
 
     @property
     def count_volunteers(self) -> int:
-        return len(self._volunteer_skills)
+        df = self._conn.query(sql="SELECT count(id) FROM v1.volunteer;", ttl=timedelta(minutes=10))
+        return df.iloc[0, 0]
 
     @property
     def count_skills_possible(self) -> int:
-        return len(all_skills_flat)
+        df = self._conn.query(sql="SELECT count(id) FROM v1.skill;", ttl=timedelta(minutes=10))
+        return df.iloc[0, 0]
 
     @property
     def count_skills_available(self) -> int:
-        return len(self.available_skills)
+        df = self._conn.query(sql="SELECT count(distinct(skill)) FROM v1.volunteer_skills;", ttl=timedelta(minutes=10))
+        return df.iloc[0, 0]
 
     @property
     def chart_volunteers_skills(self) -> dict[str, int]:
-        return {volunteer: len(skills) for volunteer, skills in self._volunteer_skills.items()}
+        df = self._conn.query(
+            sql="SELECT volunteer, count(skill) FROM v1.volunteer_skills GROUP BY volunteer;", ttl=timedelta(minutes=10)
+        )
+        return df.set_index("volunteer")["count"].to_dict()
+
+    @property
+    def chart_skills(self) -> dict[str, int]:
+        df = self._conn.query(
+            sql="SELECT skill, count(volunteer) FROM v1.volunteer_skills GROUP BY skill;", ttl=timedelta(minutes=10)
+        )
+        return df.set_index("skill")["count"].to_dict()
 
     def filter_volunteers_by_skills(self, skills: Set[str]) -> list[str]:
-        return [
-            volunteer
-            for volunteer, volunteer_skills in self._volunteer_skills.items()
-            if skills.issubset(volunteer_skills)
-        ]
+        df = self._conn.query(
+            sql="SELECT volunteer, skill FROM v1.volunteer_skills WHERE skill IN :skills;",
+            params={"skills": tuple(skills)},
+            ttl=timedelta(minutes=10),
+        )
+        return sorted(list(set(df["volunteer"])))
 
 
 def app_version() -> str:
@@ -79,11 +75,15 @@ def show_skills_query(data: VolunteerSkillsClient) -> None:
 
 def show_skills_stats(data: VolunteerSkillsClient) -> None:
     st.header("Volunteer skills statistics", divider=True)
+
     col1, col2, col3 = st.columns(3)
     col1.metric("Volunteers", data.count_volunteers)
     col2.metric("Skills (Possible)", data.count_skills_possible)
     col3.metric("Skills (Available)", data.count_skills_available)
-    st.bar_chart(data.chart_volunteers_skills, horizontal=True)
+
+    tab1, tab2 = st.tabs(["Volunteer skills", "Skill count"])
+    tab1.bar_chart(data.chart_volunteers_skills, horizontal=True)
+    tab2.bar_chart(data.chart_skills, horizontal=True)
 
 
 def show_experiment_info() -> None:
@@ -95,12 +95,15 @@ def show_experiment_info() -> None:
             ### App info
             - version: {app_version()}
             - repo: [github.com/felnne/mapaction-skills-exp](https://github.com/felnne/mapaction-skills-exp)
+            - the chart and metrics are for me to learn more about streamlit
+            - data queries are cached for 10 minutes
             """
         )
 
 
 def main() -> None:
-    engine = VolunteerSkillsClient()
+    conn: SQLConnection = st.connection("neon", type="sql")
+    engine = VolunteerSkillsClient(conn=conn)
 
     show_intro()
     show_skills_query(data=engine)

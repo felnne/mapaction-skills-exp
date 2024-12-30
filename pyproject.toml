@@ -1,6 +1,6 @@
 [project]
 name = "ma-skills-exp"
-version = "0.1.0"
+version = "0.2.0"
 description = "Experiment to manage a database of skills and competencies held by MapAction volunteers."
 readme = "README.md"
 classifiers = [
@@ -10,6 +10,8 @@ classifiers = [
 requires-python = ">=3.13"
 dependencies = [
     "faker>=33.1.0",
+    "psycopg2-binary>=2.9.10",
+    "sqlalchemy>=2.0.36",
     "streamlit>=1.41.1",
 ]
 
