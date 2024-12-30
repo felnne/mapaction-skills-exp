@@ -7,7 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [0.2.0] - 2024-12-30
+###
+
+* multi-page app
+* initial page for updating a volunteer's skills
+
+### Fixed
+
+* logic used for volunteers with skills filter (from OR to AND)
 
 ## [0.2.0] - 2024-12-29
 
