@@ -2,6 +2,10 @@
 
 Experiment to manage a database of skills and competencies held by MapAction volunteers.
 
+## Usage
+
+https://felnne-ma-skills-exp.streamlit.app/
+
 ## Setup
 
 1. create a Neon project
@@ -10,6 +14,18 @@ Experiment to manage a database of skills and competencies held by MapAction vol
     - use the provided connection string as the `connections.neon.url` value in Streamlit secrets
     - migrate database: `uv run -- scripts/db_migrate.py up`
     - seed database: `uv run -- scripts/db_seed.py`
+1. create a Streamlit Community Cloud deployment
+    - push code to GitHub
+    - if needed, create a Streamlit Community Cloud account and authorise GitHub integration
+    - create a new Streamlit app:
+      - deployment type: *deploy a public app from GitHub*
+      - repository: (as setup in GitHub)
+      - branch: `main`
+      - main file path: `main.py`
+      - app URL: `felnne-ma-skills-exp`
+      - (advanced settings) Python version: 3.12
+      - (advanced settings) secrets:
+        - as per `.streamlit/secrets.toml.example`
 
 ## Developing
 
@@ -48,6 +64,27 @@ CREATE DATABASE ma_skills OWNER ma_skills_owner;
 $ uv run -- scripts/db_migrate.py up
 $ uv run -- scripts/db_seed.py
 ```
+
+Run app:
+
+```
+$ uv run -- streamlit run main.py
+```
+
+## Releasing
+
+To create a release:
+
+```
+$ scripts/release.sh [major|minor|patch]
+```
+
+Push `main` branch and created tag to GitHub.
+
+## Deployment
+
+The Streamlit GitHub integration will automatically deploy pushed commits to the Streamlit Community Cloud.
+
 # License
 
 Copyright (c) 2024 MapAction.
