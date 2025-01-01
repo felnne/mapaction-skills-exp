@@ -1,5 +1,6 @@
 import streamlit as st
 from streamlit.connections import SQLConnection
+from streamlit_condition_tree import condition_tree
 
 from shared import show_intro, VolunteerSkillsClient
 
@@ -13,6 +14,14 @@ def show_skills_query(data: VolunteerSkillsClient) -> None:
             st.markdown("\n".join(f"- {volunteer}" for volunteer in filtered_volunteers))
         else:
             st.warning("No volunteers found with all the selected skills.")
+
+
+def show_skills_query_advanced() -> None:
+    st.header("Find a volunteer by their skills (Advanced mode)", divider=True)
+    st.info("Example of how more advanced queries could be built. The UI would need work to make usable.")
+
+    query = condition_tree(config={"fields": {"skill": {"label": "skill", "type": "text"}}}, return_type="sql")
+    st.code(query)
 
 
 def show_data_export(data: VolunteerSkillsClient) -> None:
@@ -45,4 +54,5 @@ engine = VolunteerSkillsClient(conn=conn)
 
 show_intro()
 show_skills_query(data=engine)
+show_skills_query_advanced()
 show_data_export(data=engine)

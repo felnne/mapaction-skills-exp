@@ -190,6 +190,7 @@ dependencies = [
     { name = "psycopg2-binary" },
     { name = "sqlalchemy" },
     { name = "streamlit" },
+    { name = "streamlit-condition-tree" },
 ]
 
 [package.dev-dependencies]
@@ -203,6 +204,7 @@ requires-dist = [
     { name = "psycopg2-binary", specifier = ">=2.9.10" },
     { name = "sqlalchemy", specifier = ">=2.0.36" },
     { name = "streamlit", specifier = ">=1.41.1" },
+    { name = "streamlit-condition-tree", specifier = ">=0.3.0" },
 ]
 
 [package.metadata.requires-dev]
@@ -619,6 +621,17 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/78/33/14b5ac0369ecf0af675911e5e84b934e6fcc2cec850857d2390eb373b0a6/streamlit-1.41.1.tar.gz", hash = "sha256:6626d32b098ba1458b71eebdd634c62af2dd876380e59c4b6a1e828a39d62d69", size = 8712473 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c2/87/b2e162869500062a94dde7589c167367b5538dab6eacce2e7c0f00d5c9c5/streamlit-1.41.1-py2.py3-none-any.whl", hash = "sha256:0def00822480071d642e6df36cd63c089f991da3a69fd9eb4ab8f65ce27de4e0", size = 9100386 },
+]
+
+[[package]]
+name = "streamlit-condition-tree"
+version = "0.3.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "streamlit" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c7/a9/61186616a98dac5a7fdab475f0683a5e1888bf3d94b832bc792c899922bb/streamlit_condition_tree-0.3.0-py2.py3-none-any.whl", hash = "sha256:37ee3bb3f617497bd9a3cbc73164086305edf018cdb6dc4434c8028287c2a4ef", size = 7883364 },
 ]
 
 [[package]]

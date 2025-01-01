@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 * Created/updated at timestamps for database entities
 * Queries for when a volunteer last updated their skills, and which skills have been added/changed since this
+* Very experimental query builder support (as an example)
 * Data export download
 
 ### Changed
