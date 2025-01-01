@@ -34,11 +34,6 @@ class VolunteerSkillsClient:
         return sorted(list(df["skill"]))
 
     @property
-    def skills_last_updated(self) -> Timestamp:
-        df = self._conn.query(sql="SELECT max(updated_at) FROM v1.skill;", ttl=timedelta(minutes=10))
-        return df.iloc[0, 0]
-
-    @property
     def count_volunteers(self) -> int:
         df = self._conn.query(sql="SELECT count(id) FROM v1.volunteer;", ttl=timedelta(minutes=10))
         return df.iloc[0, 0]
