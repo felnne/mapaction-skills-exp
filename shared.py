@@ -4,7 +4,7 @@ from tomllib import load as toml_load
 from typing import Set
 
 import streamlit as st
-from pandas import Timestamp
+from pandas import Timestamp, DataFrame
 from sqlalchemy import text
 from sqlalchemy.exc import DatabaseError
 from streamlit.connections import SQLConnection
@@ -61,6 +61,10 @@ class VolunteerSkillsClient:
             sql="SELECT skill, count(volunteer) FROM v1.volunteer_skills GROUP BY skill;", ttl=timedelta(minutes=10)
         )
         return df.set_index("skill")["count"].to_dict()
+
+    @property
+    def export(self) -> DataFrame:
+        return self._conn.query(sql="SELECT * FROM v1.volunteer_skills_export;", ttl=timedelta(minutes=10))
 
     def filter_skills_by_volunteer(self, volunteer_id: str) -> list[str]:
         df = self._conn.query(
