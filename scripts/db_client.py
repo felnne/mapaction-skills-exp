@@ -138,7 +138,7 @@ def encode_insert_params(values: list[dict]) -> tuple[list, dict]:
 
     for i, row in enumerate(values):
         row_placeholders = []
-        for col in ["volunteer_id", "skill_id"]:
+        for col in values[0].keys():
             var_ = f"{col}_{i}"
             placeholder = f":{var_}"
             row_placeholders.append(placeholder)

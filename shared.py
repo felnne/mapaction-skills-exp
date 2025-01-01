@@ -1,9 +1,10 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 from pathlib import Path
 from tomllib import load as toml_load
 from typing import Set
 
 import streamlit as st
+from pandas import Timestamp
 from sqlalchemy import text
 from sqlalchemy.exc import DatabaseError
 from streamlit.connections import SQLConnection
@@ -31,6 +32,11 @@ class VolunteerSkillsClient:
     def available_skills(self) -> list[str]:
         df = self._conn.query(sql="SELECT distinct(skill) FROM v1.volunteer_skills;", ttl=timedelta(minutes=10))
         return sorted(list(df["skill"]))
+
+    @property
+    def skills_last_updated(self) -> Timestamp:
+        df = self._conn.query(sql="SELECT max(updated_at) FROM v1.skill;", ttl=timedelta(minutes=10))
+        return df.iloc[0, 0]
 
     @property
     def count_volunteers(self) -> int:
@@ -69,6 +75,14 @@ class VolunteerSkillsClient:
         )
         return [str(row["skill_id"]) for _, row in df.iterrows()]
 
+    def filter_skills_updated_after(self, date: datetime) -> dict[str, str]:
+        df = self._conn.query(
+            sql="SELECT id, name FROM v1.skill WHERE updated_at > :date ORDER BY name;",
+            params={"date": date},
+            ttl=timedelta(minutes=10),
+        )
+        return {str(row["id"]): row["name"] for _, row in df.iterrows()}
+
     def filter_volunteers_by_skills(self, skills: Set[str]) -> list[str]:
         condition = " AND ".join([f"skill = :skill_{i}" for i in range(len(skills))])
         query = f"SELECT volunteer, skill FROM v1.volunteer_skills WHERE {condition};"
@@ -98,6 +112,14 @@ class VolunteerSkillsClient:
         except DatabaseError as e:
             conn.rollback()
             raise RuntimeError("Error updating volunteer skills") from e
+
+    def volunteer_skills_last_updated(self, volunteer_id: str) -> Timestamp:
+        df = self._conn.query(
+            sql="SELECT last_updated_at FROM v1.volunteer_skill_update WHERE volunteer_id = :volunteer_id LIMIT 1;",
+            params={"volunteer_id": volunteer_id},
+            ttl=timedelta(minutes=10),
+        )
+        return df.iloc[0, 0]
 
 
 def app_version() -> str:
