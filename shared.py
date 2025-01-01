@@ -30,8 +30,8 @@ class VolunteerSkillsClient:
 
     @property
     def available_skills(self) -> list[str]:
-        df = self._conn.query(sql="SELECT distinct(skill) FROM v1.volunteer_skills;", ttl=timedelta(minutes=10))
-        return sorted(list(df["skill"]))
+        df = self._conn.query(sql="SELECT distinct(name) FROM v1.skill;", ttl=timedelta(minutes=10))
+        return sorted(list(df["name"]))
 
     @property
     def count_volunteers(self) -> int:
@@ -45,20 +45,31 @@ class VolunteerSkillsClient:
 
     @property
     def count_skills_available(self) -> int:
-        df = self._conn.query(sql="SELECT count(distinct(skill)) FROM v1.volunteer_skills;", ttl=timedelta(minutes=10))
+        df = self._conn.query(
+            sql="SELECT count(distinct(skill_id)) FROM v1.volunteer_skill;", ttl=timedelta(minutes=10)
+        )
         return df.iloc[0, 0]
 
     @property
     def chart_volunteers_skills(self) -> dict[str, int]:
         df = self._conn.query(
-            sql="SELECT volunteer, count(skill) FROM v1.volunteer_skills GROUP BY volunteer;", ttl=timedelta(minutes=10)
+            sql="SELECT volunteer, array_length(skills, 1) AS skills_count FROM v1.volunteer_skills;",
+            ttl=timedelta(minutes=10),
         )
         return df.set_index("volunteer")["count"].to_dict()
 
     @property
     def chart_skills(self) -> dict[str, int]:
         df = self._conn.query(
-            sql="SELECT skill, count(volunteer) FROM v1.volunteer_skills GROUP BY skill;", ttl=timedelta(minutes=10)
+            """
+        SELECT skill, COUNT(volunteer) AS volunteer_count
+        FROM (
+            SELECT volunteer, unnest(skills) AS skill
+            FROM v1.volunteer_skills
+        ) AS unnest_skills
+        GROUP BY skill;
+        """,
+            ttl=timedelta(minutes=10),
         )
         return df.set_index("skill")["count"].to_dict()
 
@@ -83,10 +94,9 @@ class VolunteerSkillsClient:
         return {str(row["id"]): row["name"] for _, row in df.iterrows()}
 
     def filter_volunteers_by_skills(self, skills: Set[str]) -> list[str]:
-        condition = " AND ".join([f"skill = :skill_{i}" for i in range(len(skills))])
-        query = f"SELECT volunteer, skill FROM v1.volunteer_skills WHERE {condition};"
+        placeholders = ", ".join([f":skill_{i}" for i in range(len(skills))])
+        query = f"SELECT volunteer FROM v1.volunteer_skills WHERE skills @> ARRAY[{placeholders}];"
         params = {f"skill_{i}": skill for i, skill in enumerate(skills)}
-
         df = self._conn.query(sql=query, params=params, ttl=timedelta(minutes=10))
         return sorted(list(set(df["volunteer"])))
 

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+* Logic used for volunteers with skills filter (again!)
+
 ## [0.4.0] - 2025-01-01
 
 ### Added
@@ -29,7 +33,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
-* logic used for volunteers with skills filter (from OR to AND)
+* Logic used for volunteers with skills filter (from OR to AND)
 
 ## [0.2.0] - 2024-12-29
 
