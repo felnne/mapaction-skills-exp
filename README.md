@@ -76,10 +76,10 @@ $ uv run -- streamlit run main.py
 To create a release:
 
 ```
-$ scripts/release.sh [major|minor|patch]
+$ scripts/release.py [major|minor|patch|prerelease]
 ```
 
-Push `main` branch and created tag to GitHub.
+Create tag and push `main` branch to GitHub.
 
 ## Deployment
 
