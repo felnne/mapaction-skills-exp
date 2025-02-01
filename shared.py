@@ -56,7 +56,7 @@ class VolunteerSkillsClient:
             sql="SELECT volunteer, array_length(skills, 1) AS skills_count FROM v1.volunteer_skills;",
             ttl=timedelta(minutes=10),
         )
-        return df.set_index("volunteer")["count"].to_dict()
+        return df.set_index("volunteer")["skills_count"].to_dict()
 
     @property
     def chart_skills(self) -> dict[str, int]:
@@ -71,7 +71,7 @@ class VolunteerSkillsClient:
         """,
             ttl=timedelta(minutes=10),
         )
-        return df.set_index("skill")["count"].to_dict()
+        return df.set_index("skill")["volunteer_count"].to_dict()
 
     @property
     def export(self) -> DataFrame:
